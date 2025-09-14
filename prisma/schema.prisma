@@ -14,21 +14,22 @@ datasource db {
 }
 
 model User {
-  email     String   @unique
-  id        String   @id @default(uuid())
-  name      String?
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime
-  Buyer     Buyer[]
+  email        String         @unique
+  id           String         @id @default(uuid())
+  name         String?
+  password     String
+  role         Role           @default(USER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  Buyer        Buyer[]
+  BuyerHistory BuyerHistory[]
 }
 
 model Buyer {
-  id           String       @id @default(uuid())
-  email        String?      @unique
-  fullName     String       @db.VarChar(80)
-  phone        String       @unique @db.VarChar(15)
+  id           String         @id @default(uuid())
+  email        String?        @unique
+  fullName     String         @db.VarChar(80)
+  phone        String         @unique @db.VarChar(15)
   city         BuyerCity
   propertyType PropertyType
   bhk          BHK?
@@ -37,13 +38,24 @@ model Buyer {
   budgetMax    Int?
   timeline     Timeline
   source       Source
-  status       Status       @default(New)
-  notes        String?      @db.VarChar(1000)
-  tags         String[]     @default([])
-  owner        User         @relation(fields: [ownerId], references: [id])
+  status       Status         @default(New)
+  notes        String?        @db.VarChar(1000)
+  tags         String[]       @default([])
+  owner        User           @relation(fields: [ownerId], references: [id])
   ownerId      String
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  BuyerHistory BuyerHistory[]
+}
+
+model BuyerHistory {
+  id        String   @id @default(uuid())
+  buyerId   String
+  buyer     Buyer    @relation(fields: [buyerId], references: [id])
+  changedBy String
+  user      User     @relation(fields: [changedBy], references: [id])
+  changedAt DateTime @default(now())
+  diff      Json
 }
 
 enum Role {
